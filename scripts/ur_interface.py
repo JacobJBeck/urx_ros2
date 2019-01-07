@@ -8,9 +8,10 @@ import argparse
 
 import rclpy
 from rclpy.node import Node
+
 from sensor_msgs.msg import JointState
-from geometry_msgs.msg import PoseStamped
-import tf2_ros
+
+from trajectory_msgs.msg import JointTrajectory
 
 import urx
 
@@ -20,12 +21,13 @@ JOINT_NAMES = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wris
 
 class URInterface(Node):
     """TODO: Docstring"""
+
     def __init__(self, config):
         """TODO: Docstring"""
         super().__init__('ur_interface')
 
         # Store parameters
-        self._accel = config['acceleration']
+        self._acc = config['acceleration']
         self._vel = config['velocity']
 
         # Connect to robot
@@ -43,41 +45,28 @@ class URInterface(Node):
                                                     self._joint_state_callback)
         self._joint_state_pub = self.create_publisher(JointState, '/joint_states')
 
+        self._trajectory_sub = self.create_subscription(JointTrajectory, config['command_topic'],
+                                                        self._trajectory_callback)
+
         return
 
-    def _transform_callback(self, msg):
-        """Looks for target position in TF messages"""
-        # Look for our target (I'm sure there's a more pythonic way to do this)
-        target = None
-        for transform in msg.transforms:
-            if transform.child_frame_id == self._target_name:
-                target = transform
-                break
+    def _trajectory_callback(self, msg):
+        """Execute trajectory commands."""
+        # Verify joint names
+        for msg_name, known_name in zip(msg.joint_names, JOINT_NAMES):
+            if msg_name != known_name:
+                self.get_logger.error("Joint names in message do not match known names. '{}' does"
+                                      "not match '{}'".format(msg_name, known_name))
+                return
 
-        if target is None:
-            return
-
-        # Check target pose confidence
-        if (self._trans_variance > self._max_trans_variance
-                or self._rot_variance > self._max_rot_variance):
-            return
-
-        # Offset pose from target
-        new_pose = PoseStamped()
-        new_pose.header.frame_id = target.child_frame_id
-        new_pose.position.z = self._target_offset
-
-        # Transform pose into robot coordinates
-        transform = self._tf_buffer.lookup_transform('base_link', target.child_frame_id, self.now())
-        new_pose = transform.do_transform_pose(new_pose)
-
-        # Align camera with object
-        self._robot.set_pose(new_pose, self._accel, self._vel)
+        # Sequence waypoints
+        for pt in msg.points:
+            self._robot.movej(pt.positions, vel=self._vel, acc=self._acc, wait=True)
 
         return
 
     def _joint_state_callback(self):
-        """Called by timer to update the the robot joint state"""
+        """Update robot joint state when called by timer."""
         msg = JointState()
         msg.header.stamp = self.now()
         msg.name = JOINT_NAMES
@@ -95,6 +84,8 @@ def main(args=None):
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--robot-ip', type=str, default='192.168.10.77',
                         help="IP address of robot")
+    parser.add_argument('-c', '--command-topic', type=str, default='ur5/command',
+                        help="Topic to listen for commands on")
     parser.add_argument('-r', '--state-update-rate', type=float, default=30,
                         help="Rate at which joint states are queried (Hz)")
     parser.add_argument('-a', '--acceleration', type=float, default=0.01,
