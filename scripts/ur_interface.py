@@ -43,7 +43,7 @@ class URInterface(Node):
         # Create subscribers/publishers
         self._joint_state_timer = self.create_timer(1.0 / config['state_update_rate'],
                                                     self._joint_state_callback)
-        self._joint_state_pub = self.create_publisher(JointState, '/joint_states')
+        self._joint_state_pub = self.create_publisher(JointState, config['state_topic'])
 
         self._trajectory_sub = self.create_subscription(JointTrajectory, config['command_topic'],
                                                         self._trajectory_callback)
@@ -84,8 +84,10 @@ def main(args=None):
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-i', '--robot-ip', type=str, default='192.168.10.77',
                         help="IP address of robot")
-    parser.add_argument('-c', '--command-topic', type=str, default='ur5/command',
+    parser.add_argument('-c', '--command-topic', type=str, default='/ur5/joint_command',
                         help="Topic to listen for commands on")
+    parser.add_argument('-s', '--state-topic', type=str, default='/ur5/joint_states',
+                        help="Topic to publish joint state to")
     parser.add_argument('-r', '--state-update-rate', type=float, default=30,
                         help="Rate at which joint states are queried (Hz)")
     parser.add_argument('-a', '--acceleration', type=float, default=0.01,
