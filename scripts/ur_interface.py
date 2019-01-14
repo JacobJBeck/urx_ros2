@@ -60,7 +60,7 @@ class URInterface(Node):
                 return
 
         # Sequence waypoints
-        for pt in msg.points:
+        for pt in msg.points:   # TODO: use time_from_start to control speed
             self._robot.movej(pt.positions, vel=self._vel, acc=self._acc, wait=True)
 
         return

@@ -6,7 +6,7 @@ setup(
     name=package_name,
     version='0.0.0',
     packages=[],
-    py_modules=['scripts.tracker'],
+    py_modules=['scripts.ur_interface'],
     data_files=[
         ('share/' + package_name + '/launch', ['launch/ur5.launch.py'])
     ],
@@ -26,7 +26,7 @@ setup(
     license='TBD',
     entry_points={
         'console_scripts': [
-            'tracker = scripts.tracker:main'
+            'ur_interface = scripts.ur_interface:main'
         ],
     },
 )
