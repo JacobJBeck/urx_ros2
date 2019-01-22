@@ -11,7 +11,7 @@ setup(
         ('share/' + package_name + '/launch', ['launch/ur5.launch.py']),
         ('share/' + package_name + '/config', ['config/ur5.urdf'])
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'urx'],
     author='Jacob Beck',
     author_email='beck@madeinspace.us',
     maintainer='Jacob Beck',

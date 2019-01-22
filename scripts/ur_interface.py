@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """TODO: Docstring"""
 
-# Jacob Beck
-# TODO: Description
-
 import argparse
 
 import rclpy
