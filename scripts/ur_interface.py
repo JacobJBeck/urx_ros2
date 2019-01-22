@@ -65,7 +65,7 @@ class URInterface(Node):
     def _joint_state_callback(self):
         """Update robot joint state when called by timer."""
         msg = JointState()
-        msg.header.stamp = self.now()
+        msg.header.stamp = self.get_clock().now().to_msg()
         msg.name = JOINT_NAMES
         msg.position = self._robot.getj()
 
@@ -79,11 +79,11 @@ def main(args=None):
     rclpy.init(args=args)
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-i', '--robot-ip', type=str, default='192.168.10.77',
+    parser.add_argument('-i', '--robot-ip', type=str, default='192.168.10.101',
                         help="IP address of robot")
-    parser.add_argument('-c', '--command-topic', type=str, default='/ur5/joint_command',
+    parser.add_argument('-c', '--command-topic', type=str, default='/urx/joint_command',
                         help="Topic to listen for commands on")
-    parser.add_argument('-s', '--state-topic', type=str, default='/ur5/joint_states',
+    parser.add_argument('-s', '--state-topic', type=str, default='/urx/joint_states',
                         help="Topic to publish joint state to")
     parser.add_argument('-r', '--state-update-rate', type=float, default=30,
                         help="Rate at which joint states are queried (Hz)")
