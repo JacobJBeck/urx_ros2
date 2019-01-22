@@ -8,7 +8,8 @@ setup(
     packages=[],
     py_modules=['scripts.ur_interface'],
     data_files=[
-        ('share/' + package_name + '/launch', ['launch/ur5.launch.py'])
+        ('share/' + package_name + '/launch', ['launch/ur5.launch.py']),
+        ('share/' + package_name + '/config', ['config/ur5.urdf'])
     ],
     install_requires=['setuptools'],
     author='Jacob Beck',
@@ -29,4 +30,5 @@ setup(
             'ur_interface = scripts.ur_interface:main'
         ],
     },
+    zip_safe=False
 )
