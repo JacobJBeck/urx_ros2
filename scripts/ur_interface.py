@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 """TODO: Docstring"""
 
+# Standard modules
 import argparse
+import threading as th
 
+# ROS2 modules
 import rclpy
 from rclpy.node import Node
 
+# ROS message types
 from sensor_msgs.msg import JointState
 
 from trajectory_msgs.msg import JointTrajectory
 
+# External modules
 import urx
 
 JOINT_NAMES = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint",
@@ -26,6 +31,9 @@ class URInterface(Node):
         # Store parameters
         self._acc = config['acceleration']
         self._vel = config['velocity']
+
+        # Create trajectory process
+        self._trajectory_thread = th.Thread()
 
         # Connect to robot
         self.get_logger().info("Connecting to robot at {}".format(config['robot_ip']))
@@ -56,9 +64,22 @@ class URInterface(Node):
                                       "not match '{}'".format(msg_name, known_name))
                 return
 
-        # Sequence waypoints
-        for pt in msg.points:   # TODO: use time_from_start to control speed
-            self._robot.movej(pt.positions, vel=self._vel, acc=self._acc, wait=True)
+        # Kill existing trajectory
+        if self._trajectory_thread.is_alive():
+            self._trajectory_thread.join(0.0001)
+            self._trajectory_thread.terminate()
+
+        # Start new trajectory
+        self._trajectory_thread = th.Thread(target=self._execute_trajectory, args=(msg.points,))
+        self._trajectory_thread.start()
+
+        return
+
+    def _execute_trajectory(self, points):
+        """Execute a trajectory in a seperate thread."""
+        for pt in points:  # TODO: use time_from_start to control speed
+            # FIXME: movej causes current move to stop, resulting in unsmooth movement
+            self._robot.movej(pt.positions, vel=self._vel, acc=self._acc, wait=False)
 
         return
 
