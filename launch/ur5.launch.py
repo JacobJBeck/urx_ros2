@@ -15,7 +15,7 @@ def generate_launch_description():
 
     # Create nodes
     interface = Node(package='urx_ros2', node_executable='ur_interface',
-                     arguments=['--robot-ip', '192.168.10.101',
+                     arguments=['--robot-ip', '192.168.10.247',
                                 '--command-topic', '/ur5/joint_command',
                                 '--state-topic', '/ur5/joint_states'])
     state_pub = Node(package='robot_state_publisher', node_executable='robot_state_publisher',

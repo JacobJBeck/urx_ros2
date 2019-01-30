@@ -87,9 +87,9 @@ def main(args=None):
                         help="Topic to publish joint state to")
     parser.add_argument('-r', '--state-update-rate', type=float, default=30,
                         help="Rate at which joint states are queried (Hz)")
-    parser.add_argument('-a', '--acceleration', type=float, default=0.01,
+    parser.add_argument('-a', '--acceleration', type=float, default=0.5,
                         help="Robot acceleration (units unknown)")
-    parser.add_argument('-v', '--velocity', type=float, default=0.01,
+    parser.add_argument('-v', '--velocity', type=float, default=1.0,
                         help="Robot velocity (units unknown)")
     args = parser.parse_args()
 
