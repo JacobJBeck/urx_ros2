@@ -6,11 +6,12 @@ setup(
     name=package_name,
     version='0.0.0',
     packages=[],
-    py_modules=['scripts.tracker'],
+    py_modules=['scripts.ur_interface'],
     data_files=[
-        ('share/' + package_name + '/launch', ['launch/ur5.launch.py'])
+        ('share/' + package_name + '/launch', ['launch/ur5.launch.py']),
+        ('share/' + package_name + '/config', ['config/ur5.urdf'])
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'urx'],
     author='Jacob Beck',
     author_email='beck@madeinspace.us',
     maintainer='Jacob Beck',
@@ -26,7 +27,8 @@ setup(
     license='TBD',
     entry_points={
         'console_scripts': [
-            'tracker = scripts.tracker:main'
+            'ur_interface = scripts.ur_interface:main'
         ],
     },
+    zip_safe=False
 )
