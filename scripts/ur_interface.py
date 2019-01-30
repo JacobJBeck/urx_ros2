@@ -11,7 +11,6 @@ from rclpy.node import Node
 
 # ROS message types
 from sensor_msgs.msg import JointState
-
 from trajectory_msgs.msg import JointTrajectory
 
 # External modules
