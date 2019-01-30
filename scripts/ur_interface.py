@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TODO: Docstring"""
+"""Module to interface with Universal Robotics robots."""
 
 # Standard modules
 import argparse
@@ -22,10 +22,10 @@ JOINT_NAMES = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wris
 
 
 class URInterface(Node):
-    """TODO: Docstring"""
+    """Node to interface with Universal Robotics robots."""
 
     def __init__(self, config):
-        """TODO: Docstring"""
+        """Initialize class."""
         super().__init__('ur_interface')
 
         # Store parameters
@@ -96,7 +96,7 @@ class URInterface(Node):
 
 
 def main(args=None):
-    """TODO: Docstring"""
+    """Parse arguments and start node."""
     rclpy.init(args=args)
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
